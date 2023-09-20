@@ -20,6 +20,6 @@ for i=1:nU
 #    push!(es2,e)
     println(Us[i],"\t",es[i])
 end
-fig = plot(Us,es2,labels="")
-savefig(fig,"testfig/Fig5.png")
-fig
+
+plot(Us,es2,labels="")
+savefig("M1_study/mottpolariton/testfig/Fig5.png")
