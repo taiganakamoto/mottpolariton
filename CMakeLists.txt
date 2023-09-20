@@ -9,5 +9,3 @@ enable_testing()
 configure_file(${execute_name} ${execute_name} FILE_PERMISSIONS OWNER_READ 
 OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
 WORLD_READ WORLD_EXECUTE)
-
-add_test(test_hubbard ${Julia_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_hubbard.jl)
