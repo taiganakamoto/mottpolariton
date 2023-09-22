@@ -1,9 +1,7 @@
 using LinearAlgebra
 using Plots
-using SparseArrays
-using IterativeSolvers
 
-include("func_hubbard.jl")
+include("func_nagai.jl")
 
 nsite = 4
 nelec = nsite
@@ -14,12 +12,12 @@ Us = range(-10,length=nU,stop=10)
 es = zeros(Float64,nU)
 es2 = zeros(Float64,nU,70)
 for i=1:nU
-    hamil = make_hamil(μs[i],Us[i],nsite,nelec)
-    hamiltonian = Array(hamil)
+    hamiltonian = make_hamiltonian(μs[i],Us[i],nsite)
+    hamiltonian =reduce_hamiltonian(hamiltonian,nsite,nelec)
     e,v = eigen(hamiltonian)
     es[i] = e[2]-e[1]
-    es2[i,:] = e[:]
+    es2[i,:] = e[:] .+ μs[i]^2*nelec/Us[i]
     println(Us[i],"\t",es[i])
 end
 fig = plot(Us,es2,labels="",xlabel="U",ylabel="all energy")
-savefig(fig,"testfig/Fig5_me.png")
+savefig(fig,"testfig/Fig5_nagai.png")

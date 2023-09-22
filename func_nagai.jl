@@ -116,20 +116,20 @@ function make_hamiltonian(μ,U,nsite)
         end
         end
 
-    
+        
         j = i
         for ispin=1:2
             ii = (ispin-1)*nsite + i
             jj = (ispin-1)*nsite + j
             hamiltonian += -μ*vec_cdag[ii]*vec_c[jj]
         end
-    
+        
         iup = i
         idown = nsite + i
         hamiltonian += U*vec_cdag[iup]*vec_c[iup]*vec_cdag[idown]*vec_c[idown]
-   
-    
-    
+       
+        
+        
     end
     return hamiltonian
 end
