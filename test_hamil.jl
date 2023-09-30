@@ -25,7 +25,7 @@ U = 20.0
 μ = U/2
 nη = 100
 ηs = range(0.0,6.0,length=nη) 
-ω = 0.0
+ω = U
 ess = zeros(Float64,nη,Ndim)
 
 for i=1:nη
@@ -36,7 +36,7 @@ for i=1:nη
     ess[i,:] = real(es[:]) 
     println(real(es[1]),"\t",eg)
 end
-fig = plot(ηs,ess,title="N_c=4,U=20,ω=U/2",labels="",xlabel="η",ylabel="all energy")
+fig = plot(ηs,ess,title="N_c=4,ω=U=20",labels="",xlabel="η",ylabel="all energy")
 savefig(fig,"Fig_all.png")
 #
 

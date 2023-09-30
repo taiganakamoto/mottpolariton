@@ -1,5 +1,5 @@
 #状態を01で表現。左半分がダウンスピン、右半分がアップスピン
-function i2sites(i,nsite)
+@inline function i2sites(i,nsite)
     n = 2*nsite
     sites = zeros(Bool,n)
     ii = i
@@ -12,7 +12,7 @@ function i2sites(i,nsite)
 end
 
 #どのサイトがどの状態の番号なのかを調べる関数
-function sites2i(sites)
+@inline function sites2i(sites)
     n = length(sites)
     ii = 0
     for i=1:n
@@ -22,12 +22,12 @@ function sites2i(sites)
 end
 
 #サイトに電子がいるかどうかの関数
-function check_site(isite,sites)
+@inline function check_site(isite,sites)
     return sites[isite]
 end
 
 #考えているサイトより左の粒子の数に応じて符号を与える関数
-function check_sign(isite,sites)
+@inline function check_sign(isite,sites)
     n = length(sites)
     sign = 1
     for jsite = n:-1:isite+1
@@ -71,7 +71,7 @@ function make_cdc(ith,ispin,jth,jspin,ip,jp,nsite,nelec,N_c)
     ntofull, fullton = n_full(nsite,nelec)
     ndim = length(ntofull)
     Ndim = ndim*(N_c+1)
-    mat_cdc = spzeros(Ndim,Ndim)
+    mat_cdc = spzeros(ComplexF64,Ndim,Ndim)
     
     for k=1:ndim
         k_full = ntofull[k]
@@ -103,13 +103,13 @@ function make_hamil(μ,U,η,ω,nsite,nelec,N_c)
     for ip=0:N_c
         
         #フォトン数ipのセクターでの単位行列
-        Uni = spzeros(Ndim,Ndim)
+        Uni = spzeros(ComplexF64,Ndim,Ndim)
         for i=1:ndim
-            Uni[ip*ndim+i,ip*ndim+i] += 1.0
+            Uni[ip*ndim+i,ip*ndim+i] += complex(1.0,0.0)
         end
 
-        #対角要素にフォトン数に応じたエネルギーを埋める
-        hamil += ip*Ω*Uni
+        #対角要素にフォトン数に応じたエネルギーを埋める。Lanczos法のために、0フォトンstateのエネルギーを絶対値最小にしておく
+        hamil += (ip-N_c)*Ω*Uni
 
         #フォトン数が保存するセクターに行列要素を埋める
         jp = ip

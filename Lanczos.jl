@@ -1,52 +1,84 @@
 #試行ベクトルをランダムにしてLanczos法を実行
 function lanczos(hamil, steps)
     Random.seed!(5)
-    ndim = size(hamil,1)
-    v = zeros(ComplexF64, ndim, steps+1)
+    Ndim = size(hamil,1)
     alpha = zeros(Float64, steps)
     beta = zeros(Float64, steps)
-    v[:,1] = rand(ComplexF64,ndim)
+    dum = zeros(ComplexF64,Ndim)
+    v1 = rand(ComplexF64,Ndim)
+    v2 = zeros(ComplexF64,Ndim)
+    w1 = zeros(ComplexF64,Ndim)
+    w2 = zeros(ComplexF64,Ndim)
 
-    # Lanczos steps
-    # first step
+    #initial state
+    v1 = v1/norm(v1)
+    w1 = v1 #copy initial state for calculating grandstate vector
     beta[1] = 1.0
-    v[:,1] /= norm(v[:,1])
-    alpha[1] = real(v[:,1]' * hamil * v[:,1])
-    v[:,2] = hamil * v[:,1] - alpha[1] * v[:,1]
-    # jth steps
-    for j in 2:steps
-        beta[j] = norm(v[:,j])
-        v[:,j] /= beta[j]
-        alpha[j] = real(v[:,j]' * hamil * v[:,j])
-        v[:,j+1] = hamil * v[:,j] - alpha[j] * v[:,j] - beta[j] * v[:,j-1]
+
+    # lanczos steps
+    for j in 1:steps-1
+        v2 = v2 + hamil*v1
+        alpha[j] = real(v1'*v2)
+        dum = v1
+        v1 = v2 - alpha[j]*v1
+        v2 = dum
+        beta[j+1] = norm(v1)
+        v2 = -beta[j+1]*v2
+        v1 = v1/beta[j+1]
     end
+
+    #final step
+    v2 = v2 + hamil*v1
+    alpha[steps] = real(v1'*v2)
+
+    #calculate tridiagonal matrices
     T = SymTridiagonal(alpha,beta[2:steps])
     es, vs = eigen(T)
-    vg = v[:,1:steps] * vs[:,1]
+
+    #calculate grandstate vector
+    vg = zeros(ComplexF64,Ndim)
+    vg += vs[1,1]*w1
+    for j in 1:steps-1
+        w2 = w2 + hamil*w1
+        dum = w1
+        w1 = w2 - alpha[j]*w1
+        w2 = -beta[j+1]*dum
+        w1 = w1/norm(beta[j+1])
+        vg += vs[j+1,1]*w1
+    end
+
     return es[1], vg
 end
 
-#試行ベクトルをv1として、Lanczos法を実行
-function lanczos(hamil, v1, steps)
-    ndim = length(v1)
-    v = zeros(ComplexF64, ndim, steps+1)
+#規格化された試行ベクトルをv1として、Lanczos法を実行
+function lanczos(hamil, v0, steps)
+    Ndim = size(hamil,1)
     alpha = zeros(Float64, steps)
     beta = zeros(Float64, steps)
-    v[:, 1] = v1
+    dum = zeros(ComplexF64,Ndim)
+    v1 = zeros(ComplexF64,Ndim)
+    v2 = zeros(ComplexF64,Ndim)
 
-    # Lanczos steps
-    # first step
+    #initial state
+    v1 = v0
     beta[1] = 1.0
-    v[:,1] /= norm(v[:,1])
-    alpha[1] = real(v[:,1]' * hamil * v[:,1])
-    v[:,2] = hamil * v[:,1] - alpha[1] * v[:,1]
-    # jth steps
-    for j in 2:steps
-        beta[j] = norm(v[:,j])
-        v[:,j] /= beta[j]
-        alpha[j] = real(v[:,j]' * hamil * v[:,j])
-        v[:,j+1] = hamil * v[:,j] - alpha[j] * v[:,j] - beta[j] * v[:,j-1]
+
+    # lanczos steps
+    for j in 1:steps-1
+        v2 = v2 + hamil*v1
+        alpha[j] = real(v1'*v2)
+        dum = v1
+        v1 = v2 - alpha[j]*v1
+        v2 = dum
+        beta[j+1] = norm(v1)
+        v2 = -beta[j+1]*v2
+        v1 = v1/beta[j+1]
     end
+
+    #final step
+    v2 = v2 + hamil*v1
+    alpha[steps] = real(v1'*v2)
+
     return alpha, beta
 end
 
@@ -54,17 +86,17 @@ function frac(n, z, alpha, beta)
     if n < length(alpha)
         return beta[n]^2/(z-alpha[n]-frac(n+1,z,alpha,beta))
     else
-        return 0
+        return complex(0.0,0.0)
     end
 end
 
 function opcon(hamil,steps,ws,δ,nsite,nelec,N_c)
     eg, vg = lanczos(hamil,steps)
     J = currents(nsite,nelec,N_c)
-    v1 = J*vg
-    nm = norm(v1)
-    v1 /= nm
-    alpha, beta = lanczos(hamil,v1,steps)
+    v0 = J*vg
+    nm = norm(v0)
+    v0 = v0/nm
+    alpha, beta = lanczos(hamil,v0,steps)
     nw = length(ws)
     spec = zeros(Float64,nw)
 
