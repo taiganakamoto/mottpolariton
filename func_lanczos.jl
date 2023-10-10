@@ -92,7 +92,7 @@ end
 
 function opcon(hamil,steps,ws,δ,nsite,nelec,N_c)
     eg, vg = lanczos(hamil,steps)
-    J = currents(nsite,nelec,N_c)
+    J = make_Current(nsite,nelec,N_c)
     v0 = J*vg
     nm = norm(v0)
     v0 = v0/nm
