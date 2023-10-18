@@ -108,3 +108,22 @@ function opcon(hamil,steps,ws,δ,nsite,nelec,N_c)
 
     return spec
 end
+
+function opcon(hamil,steps,ws,δ,nsite,nelec,ndown,N_c)
+    eg, vg = lanczos(hamil,steps)
+    J = make_Current(nsite,nelec,ndown,N_c)
+    v0 = J*vg
+    nm = norm(v0)
+    v0 = v0/nm
+    alpha, beta = lanczos(hamil,v0,steps)
+    nw = length(ws)
+    spec = zeros(Float64,nw)
+
+    for i=1:nw
+        z = ws[i] + δ*1im + eg
+        X = frac(1,z,alpha,beta)
+        spec[i] = -nm^2*imag(X)
+    end
+
+    return spec
+end

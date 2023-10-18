@@ -17,8 +17,9 @@ end
 #
 nsite = 4
 nelec = nsite
+ndown = 2
 N_c = 3
-ndim = combi(2*nsite,nelec)
+ndim = combi(nsite,ndown)*combi(nsite,nelec-ndown)
 Ndim = ndim*(N_c+1)
 
 U = 20.0
@@ -31,15 +32,15 @@ ws = range(0.1,4*U,length=nw)
 δ = 0.01
 spec = zeros(Float64,nw,nη)
 spec2 = zeros(Float64,nw,nη)
-J = make_Current(nsite,nelec,N_c)
+J = make_Current(nsite,nelec,ndown,N_c)
 
 #mkdir("Data/test")
-#out = open("Data/test/spec.txt","w")
-#println(out,"η","\t","ω","\t","spec_exact","\t","spec_lanczos")
+out = open("spec.txt","w")
+println(out,"η","\t","ω","\t","spec_exact","\t","spec_lanczos")
 
 for i=1:nη
-    hamil = make_hamil(μ,U,ηs[i],ω,nsite,nelec,N_c)
-    spec[:,i] = opcon(hamil,150,ws,δ,nsite,nelec,N_c)
+    hamil = make_hamil(μ,U,ηs[i],ω,nsite,nelec,ndown,N_c)
+    spec[:,i] = opcon(hamil,150,ws,δ,nsite,nelec,ndown,N_c)
     hamil2 = Array(hamil)
     es, vs = eigen(hamil2)
     Jvg = J*vs[:,1]
@@ -47,17 +48,17 @@ for i=1:nη
         for j=1:Ndim
             spec2[k,i] += real((vs[:,j]' * Jvg)^2)*imag(1/(ws[k] + es[1] - es[j] + δ*1im)) 
         end
-        #println(out,ηs[i],"\t",ws[k],"\t",spec2[k,i],"\t",spec[k,i])
+        println(out,ηs[i],"\t",ws[k],"\t",spec2[k,i],"\t",spec[k,i])
     end
 end
 
-#close(out)
+close(out)
 
-fig = heatmap(ηs,ws,spec,c=:thermal,title="N_e=$nelec,N_c=$N_c,ω=U=$U",colorbar_title="ω*σ(ω)",xlabel="η",ylabel="ω")
+#=fig = heatmap(ηs,ws,spec,c=:thermal,title="N_e=$nelec,N_c=$N_c,ω=U=$U",colorbar_title="ω*σ(ω)",xlabel="η",ylabel="ω")
 fig2 = heatmap(ηs,ws,spec2,c=:thermal,title="N_e=$nelec,N_c=$N_c,ω=U=$U",colorbar_title="ω*σ(ω)",xlabel="η",ylabel="ω")
 savefig(fig,"Fig1_opcon_lanczos.png")
 savefig(fig2,"Fig1_opcon_exact.png")
-
+=#
 
 
 #=
