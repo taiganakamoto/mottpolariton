@@ -23,11 +23,11 @@ Ndim = ndim*(N_c+1)
 
 U = 20.0
 μ = U/2
-ω = U
+ω = U/2
 nη = 100
 nw = 200
-ηs = range(0.0,6.0,length=nη)
-ws = range(0.1,4*U,length=nw)
+ηs = range(0.0,U,length=nη)
+ws = range(0.1,2*U,length=nw)
 δ = 0.01
 spec = zeros(Float64,nw,nη)
 spec2 = zeros(Float64,nw,nη)
@@ -53,8 +53,8 @@ end
 
 #close(out)
 
-fig = heatmap(ηs,ws,spec,c=:thermal,title="N_e=$nelec,N_c=$N_c,ω=U=$U",colorbar_title="ω*σ(ω)",xlabel="η",ylabel="ω")
-fig2 = heatmap(ηs,ws,spec2,c=:thermal,title="N_e=$nelec,N_c=$N_c,ω=U=$U",colorbar_title="ω*σ(ω)",xlabel="η",ylabel="ω")
+fig = heatmap(ηs,ws,spec,c=:thermal,clims=(0.2,50),title="N_e=$nelec,N_c=$N_c,ω_c=$ω,U=$U",colorbar_title="ω*σ(ω)",xlabel="η",ylabel="ω")
+fig2 = heatmap(ηs,ws,spec2,c=:thermal,clims=(0.2,50),title="N_e=$nelec,N_c=$N_c,ω_c=$ω,U=$U",colorbar_title="ω*σ(ω)",xlabel="η",ylabel="ω")
 savefig(fig,"Fig1_opcon_lanczos.png")
 savefig(fig2,"Fig1_opcon_exact.png")
 

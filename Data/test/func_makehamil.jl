@@ -162,7 +162,7 @@ function make_hop(nsite,nelec)
 end
 
 #∑_{i}(n_{i,up}-μ/U)*(n_{i,down}-μ/U)
-function make_nn(nsite,nelec)
+function make_nn(nsite,nelec,μ,U)
     ndim = combi(2*nsite,nelec)
     nn = spzeros(ComplexF64,ndim,ndim)
     Uni = make_Uni(nsite,nelec)
@@ -179,13 +179,13 @@ function make_hamil(μ,U,η,ω,nsite,nelec,N_c)
     Ndim = ndim*(N_c+1)
     hamil = spzeros(ComplexF64,Ndim,Ndim)
 
-    Ω = ω#*sqrt(1+η^2)
-    ζ = η/sqrt(nelec)#/(1+η^2)^(1/4)
+    Ω = ω*sqrt(1+η^2)
+    ζ = η/sqrt(nelec)/(1+η^2)^(1/4)
 
     Uni = make_Uni(nsite,nelec)
     J = make_current(nsite,nelec)
     T = make_hop(nsite,nelec)
-    nn = make_nn(nsite,nelec)
+    nn = make_nn(nsite,nelec,μ,U)
     
     for ip=0:N_c
         
@@ -222,7 +222,7 @@ function make_effhamil(μ,U,η,ω,nsite,nelec,N_c)
     Uni = make_Uni(nsite,nelec)
     J = make_current(nsite,nelec)
     T = make_hop(nsite,nelec)
-    nn = make_nn(nsite,nelec)
+    nn = make_nn(nsite,nelec,μ,U)
     
     for ip=0:N_c
         
