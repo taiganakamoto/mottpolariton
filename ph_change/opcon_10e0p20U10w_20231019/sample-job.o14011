@@ -1,0 +1,18 @@
+/home/nakamoto/.bashrc: line 10: ulimit: stack size: cannot modify limit: Operation not permitted
+ERROR: LoadError: MethodError: no method matching div(::String, ::Int64, ::RoundingMode{:ToZero})
+
+Closest candidates are:
+  div(!Matched::P, ::Real, ::RoundingMode) where P<:Period
+   @ Dates ~/julia-1.9.3/share/julia/stdlib/v1.9/Dates/src/periods.jl:81
+  div(!Matched::Rational, ::Integer, ::RoundingMode)
+   @ Base rational.jl:445
+  div(!Matched::Missing, ::Number, ::RoundingMode)
+   @ Base missing.jl:129
+  ...
+
+Stacktrace:
+ [1] div(a::String, b::Int64)
+   @ Base ./div.jl:47
+ [2] top-level scope
+   @ ~/mottpol/opcon_10e0p20U10w_20231019/opcon.jl:12
+in expression starting at /home/nakamoto/mottpol/opcon_10e0p20U10w_20231019/opcon.jl:12

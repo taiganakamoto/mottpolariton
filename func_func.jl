@@ -1,1 +1,4 @@
-function countphoto()
+#function countphoto()
+#end
+
+function groundene(hamil)

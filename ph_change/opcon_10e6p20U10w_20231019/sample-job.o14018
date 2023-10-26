@@ -1,0 +1,2 @@
+/home/nakamoto/.bashrc: line 10: ulimit: stack size: cannot modify limit: Operation not permitted
+/var/spool/torque/mom_priv/jobs/14018.qcrt01.ad12.riken.jp.SC: line 11: 71477 Killed                  julia ./opcon.jl 10 6
